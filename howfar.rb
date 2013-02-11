@@ -9,8 +9,6 @@ class HowFar < Sinatra::Application
     # Get users location
     @place1 = request.location.city
 
-    @place1 = "Northampton, United Kingdom"
-
     # Pick random place
     places = File.open('model/places.txt').readlines
 
@@ -28,7 +26,7 @@ class HowFar < Sinatra::Application
 
     @guess = params[:distance]
     
-    @actual = Geocoder::Calculations.distance_between(session[:place1], session[:place2])
+    @actual = Geocoder::Calculations.distance_between(session[:place1], session[:place2]).round
 
     haml :answer
   end
