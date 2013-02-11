@@ -1,0 +1,10 @@
+.container
+	.row
+		.span8.offset2
+			%form{ :action => "/", :method => "post"}
+				%h1= "How far is it from #{@place1} to #{@place2}?"
+				%br
+				%input.form-input{ :name => "distance", :type => "text", :size => "30"}
+				miles
+				%br
+				%input.btn{ :name => "submit", :type => "submit", :value => "Submit"}

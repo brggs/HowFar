@@ -1,0 +1,14 @@
+.container
+	.row
+		.span8.offset2
+			%h1= "How far is it from #{session[:place1]} to #{session[:place2]}?"
+
+			%br
+
+			%img{:src => "http://maps.google.com/maps/api/staticmap?size=740x350&scale=2&maptype=roadmap&sensor=false&markers=color:blue|label:A|#{session[:place1]}&markers=color:purple|label:B|#{session[:place2]}"}
+
+			%h3= "Your guess: #{@guess} miles."
+
+			%h3= "Actual distance: #{@actual} miles."
+
+			%a.btn.btn-primary{:href => '/'}= "Play again!"
