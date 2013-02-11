@@ -1,5 +1,4 @@
-HowFar
-======
+= HowFar
 
 A distance guessing game, built with the Sinatra web framework.
 
