@@ -17,3 +17,4 @@ Then go to http://localhost:9292 to play.
 Distances are calculated by {Geocoder}[http://www.rubygeocoder.com/].
 
 List of the worlds most populus cities is from {World Atlas}[http://www.worldatlas.com/citypops.htm].
+List of famous landmarks is from {here}[http://designlike.com/2011/12/05/100-most-famous-landmarks-around-the-world/].

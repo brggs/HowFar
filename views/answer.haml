@@ -1,14 +1,15 @@
 .container
 	.row
 		.span8.offset2
-			%h1= "How far is it from #{session[:place1]} to #{session[:place2]}?"
+			%h2= "How far is it from #{session[:place1]} to #{session[:place2]}?"
+
+			%img{:src => "http://maps.google.com/maps/api/staticmap?size=740x320&scale=2&maptype=roadmap&sensor=false&markers=color:blue|label:A|#{session[:place1]}&markers=color:purple|label:B|#{session[:place2]}"}
+
+	.row
+		.span8.offset2.pagination-centered
+			%h3.text-center= "Your guess: #{@guess} miles."
+			%h3= "Actual distance: #{@actual} miles."
+			%h3= "#{@difference} miles out! #{@description}"
 
 			%br
-
-			%img{:src => "http://maps.google.com/maps/api/staticmap?size=740x350&scale=2&maptype=roadmap&sensor=false&markers=color:blue|label:A|#{session[:place1]}&markers=color:purple|label:B|#{session[:place2]}"}
-
-			%h3= "Your guess: #{@guess} miles."
-
-			%h3= "Actual distance: #{@actual} miles."
-
-			%a.btn.btn-primary{:href => '/'}= "Play again!"
+			%a.btn.btn-primary{:href => '/'}= "Play again!"	
