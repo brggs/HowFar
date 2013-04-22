@@ -1,0 +1,22 @@
+.container
+	.row
+		.span8.offset2
+			%h2= "How far is it from #{session[:place1]} to #{session[:place2]}?"
+
+			%img{:src => "http://maps.google.com/maps/api/staticmap?size=740x320&scale=2&maptype=roadmap&sensor=false&markers=color:blue|label:A|#{session[:place1]}&markers=color:purple|label:B|#{session[:place2]}"}
+
+	.row
+		.span8.offset2.pagination-centered
+			%h3= "Actual distance: #{@actual} miles."
+			%br
+			%h3= "Player 1 guess: #{@p1_guess} miles."
+			%h3= "#{@p1_difference} miles out! #{@p1_description}"
+			%br
+			%h3= "Player 2 guess: #{@p2_guess} miles."
+			%h3= "#{@p2_difference} miles out! #{@p2_description}"
+			%br
+			%h3= "Score: Player 1  (#{session[:p1_score]} - #{session[:p2_score]})  Player 2"
+
+			%br
+			%a.btn.btn-primary{:href => '/headtohead'}= "Play again!"
+			%a.btn{:href => '/headtohead_reset'}= "Reset Score"

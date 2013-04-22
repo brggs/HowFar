@@ -1,0 +1,15 @@
+.container
+	.row
+		.span8.offset2
+			%form{ :action => "/headtohead", :method => "post"}
+				%h1= "How far is it from #{@place1} to #{@place2}?"
+				%br
+				Player 1:
+				%input.form-input{ :name => "p1_distance", :type => "text", :size => "30"}
+				miles
+				%br
+				Player 2:
+				%input.form-input{ :name => "p2_distance", :type => "text", :size => "30"}
+				miles
+				%br
+				%input.btn{ :name => "submit", :type => "submit", :value => "Submit"}

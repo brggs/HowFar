@@ -1,5 +1,6 @@
 require 'sinatra'
-require 'geocoder'
+
+require './model/howfargame'
 
 class HowFar < Sinatra::Application
   enable :sessions
@@ -8,15 +9,10 @@ class HowFar < Sinatra::Application
   get '/' do
     # Get users location
     @place1 = request.location.city
+    @place1 = 'London'
 
     # Pick random place
-    places = File.open('model/places.txt').readlines
-
-    places += File.open('model/landmarks.txt').readlines
-
-    placeId = rand(places.count)
-
-    @place2 = places[placeId]
+    @place2 = HowFarGame.random_location
 
     session[:place1] = @place1
     session[:place2] = @place2
@@ -28,40 +24,64 @@ class HowFar < Sinatra::Application
 
     @guess = params[:distance].to_i
     
-    @actual = Geocoder::Calculations.distance_between(session[:place1], session[:place2]).round
+    result = HowFarGame.calculate_difference(session[:place1], session[:place2], @guess)
 
-    if @guess > @actual
-      @difference = @guess - @actual
-    else
-      @difference = @actual - @guess
-    end
-
-    @percent_diff = (@difference.to_f / @actual.to_f) * 100
-
-    if @percent_diff < 1
-      @description = "Nicely Googled!"
-
-    elsif @percent_diff < 10
-      @description = "Awesome!"
-
-    elsif @percent_diff < 30
-      @description = "Not bad!"
-
-    elsif @percent_diff < 50
-      @description = "Ok..."
-
-    elsif @percent_diff < 75
-      @description = "Maybe time to buy a globe?"
-
-    elsif @percent_diff < 100
-      @description = "My Gran can do better than that!"
-
-    else
-      @description = "Are you drunk?"
-
-    end
+    @actual = result[:actual]
+    @difference = result[:difference]
+    @description = result[:description]
 
     haml :answer
+  end
+
+  get '/headtohead' do
+
+    session[:p1_score] = 0 if session[:p1_score].nil?
+    session[:p2_score] = 0 if session[:p2_score].nil?
+
+    # Get users location
+    @place1 = request.location.city
+    @place1 = 'London'
+
+    # Pick random place
+    @place2 = HowFarGame.random_location
+
+    session[:place1] = @place1
+    session[:place2] = @place2
+
+    haml :headtohead
+  end
+
+  post '/headtohead' do
+
+    @p1_guess = params[:p1_distance].to_i
+    @p2_guess = params[:p2_distance].to_i
+    
+    p1_result = HowFarGame.calculate_difference(session[:place1], session[:place2], @p1_guess)
+    p2_result = HowFarGame.calculate_difference(session[:place1], session[:place2], @p2_guess)
+
+    @actual = p1_result[:actual]
+
+    @p1_difference = p1_result[:difference]
+    @p1_description = p1_result[:description]
+
+    @p2_difference = p2_result[:difference]
+    @p2_description = p2_result[:description]
+
+    if @p1_difference < @p2_difference
+      session[:p1_score] += 1
+    elsif @p1_difference > @p2_difference      
+      session[:p2_score] += 1
+    end
+
+    haml :headtohead_answer
+  end
+
+  get '/headtohead_reset' do
+
+    session[:p1_score] = 0
+    session[:p2_score] = 0
+
+    redirect '/headtohead'
   end
 
 end
