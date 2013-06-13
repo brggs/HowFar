@@ -1,87 +1,132 @@
 require 'sinatra'
-
+require 'mongo'
+require 'omniauth-twitter'
 require './model/howfargame'
 
 class HowFar < Sinatra::Application
   enable :sessions
+  set :session_secret, ENV['SESSION_SECRET']
   set :haml, :format => :html5 
 
+  use OmniAuth::Builder do
+    provider :twitter, ENV['TWITTER_KEY'], ENV['TWITTER_SECRET']
+  end
+
+  before do
+    @db = Mongo::Connection.new("localhost", 27017).db("howfardb")
+    @user = @db['users'].find_one("user_id" => session[:uid]) unless session[:uid].nil?
+  end
+
   get '/' do
-    # Get users location
-    @place1 = request.location.city
-    @place1 = 'London'
+    # Check for existing game
+    @game = HowFarGame.current_game(session[:uid])
 
-    # Pick random place
-    @place2 = HowFarGame.random_location
+    haml :index
+  end
 
-    session[:place1] = @place1
-    session[:place2] = @place2
+  get '/new' do
+    redirect '/' unless @user
+
+    # Notify if the last input was invalid, then reset the flag
+    @invalid_location = session[:invalid_location]
+    session[:invalid_location] = false
+
+    # Try to get user's location to populate options
+    @user_location = request.location.city
+
+    # If this isn't available default to the previous game's location
+    if @user_location.to_s.empty?
+      previous_game = HowFarGame.current_game(session[:uid])
+      if previous_game
+        @user_location = previous_game['user_location']
+      end      
+    end
+
+    haml :new
+  end
+
+  post '/new' do
+    redirect '/' unless @user
+
+    location = Geocoder.search(params[:user_location])
+
+    if location.empty?
+      session[:invalid_location] = true
+      redirect '/new' 
+    end
+
+    HowFarGame.new_game(session[:uid], params[:user_location])
+
+    redirect '/play'
+  end
+
+  get '/play' do
+    redirect '/' unless @user
+
+    # Load current game
+    @game = HowFarGame.current_game(session[:uid])
+
+    redirect '/new' if @game['game_over']
 
     haml :play
   end
 
-  post '/' do
+  post '/play' do
+    redirect '/' unless @user
 
-    @guess = params[:distance].to_i
+    if HowFarGame.current_game(session[:uid])['level'] != params[:level].to_i
+      redirect '/play'
+    end
     
-    result = HowFarGame.calculate_difference(session[:place1], session[:place2], @guess)
-
-    @actual = result[:actual]
-    @difference = result[:difference]
-    @description = result[:description]
+    @guess = params[:distance].to_i
+    @result = HowFarGame.answer_question(session[:uid], @guess)
 
     haml :answer
   end
 
-  get '/headtohead' do
+  get '/leader_board' do
+    @leader_board = HowFarGame.leader_board.map do |e| 
 
-    session[:p1_score] = 0 if session[:p1_score].nil?
-    session[:p2_score] = 0 if session[:p2_score].nil?
+      user = @db['users'].find_one("user_id" => e['user_id'])
 
-    # Get users location
-    @place1 = request.location.city
-    @place1 = 'London'
-
-    # Pick random place
-    @place2 = HowFarGame.random_location
-
-    session[:place1] = @place1
-    session[:place2] = @place2
-
-    haml :headtohead
-  end
-
-  post '/headtohead' do
-
-    @p1_guess = params[:p1_distance].to_i
-    @p2_guess = params[:p2_distance].to_i
-    
-    p1_result = HowFarGame.calculate_difference(session[:place1], session[:place2], @p1_guess)
-    p2_result = HowFarGame.calculate_difference(session[:place1], session[:place2], @p2_guess)
-
-    @actual = p1_result[:actual]
-
-    @p1_difference = p1_result[:difference]
-    @p1_description = p1_result[:description]
-
-    @p2_difference = p2_result[:difference]
-    @p2_description = p2_result[:description]
-
-    if @p1_difference < @p2_difference
-      session[:p1_score] += 1
-    elsif @p1_difference > @p2_difference      
-      session[:p2_score] += 1
+      {:player => user['name'], :profile_image => user['profile_image'], :level => e['level']} unless user.nil?
     end
 
-    haml :headtohead_answer
+    @game_count = @db['leader_board'].count
+
+    haml :leader_board
   end
 
-  get '/headtohead_reset' do
+  get '/auth/twitter/callback' do
+    halt(401,'Not Authorized') if env['omniauth.auth'].nil?
+    
+    session[:uid] = env['omniauth.auth']['uid']
 
-    session[:p1_score] = 0
-    session[:p2_score] = 0
+    user = @db['users'].find_one("user_id" => session[:uid])
 
-    redirect '/headtohead'
+    if user.nil?
+      new_user = {:user_id => session[:uid],
+                  :name => "@" << env['omniauth.auth']['info']['nickname'],
+                  :profile_image => env['omniauth.auth']['info']['image']
+                }
+      @db['users'].insert(new_user)
+    else
+      # Update with the latest pic
+      user['name'] = "@" << env['omniauth.auth']['info']['nickname']
+      user['profile_image'] = env['omniauth.auth']['info']['image']
+
+      @db['users'].update({"_id" => user['_id']}, user)
+    end
+
+    redirect to("/")
   end
 
+  get '/auth/failure' do
+    params[:message]
+  end
+
+  get '/logout' do
+    session[:uid] = nil
+    redirect to("/")
+  end
 end

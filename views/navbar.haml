@@ -1,18 +1,29 @@
-.navbar.navbar-fixed-top
-	.navbar-inner
-		.container
-			.span8.offset1
-				%a.btn.btn-navbar{ "data-toggle".to_sym => "collapse", "data-target".to_sym => ".nav-collapse"}
-					%span.icon-bar
-					%span.icon-bar
-					%span.icon-bar
-				%a.brand{:href => '/'}
-					%i.icon-plane.icon-white
-					How far!
-					
-				.nav-collapse
-					%ul.nav
-						%li
-							%a{:href => '/'}Play
-						%li
-							%a{:href => '/headtohead'}Head to Head
+.contain-to-grid.fixed
+	%nav.top-bar
+		%ul.title-area	
+			%li.name
+				%h1
+					%a{:href => '/'}
+						How far!
+			%li.toggle-topbar.menu-icon
+				%a{:href => '#'}
+					%span Menu
+
+		%section.top-bar-section
+			%ul.left
+				%li
+					%a{:href => '/play'} Play
+				%li
+					%a{:href => '/leader_board'} Leader Board
+
+			- if @user
+				%ul.right
+					%li.divider.hide-for-small
+					%li.has-dropdown
+						%a{:href => '#'}
+							%img{:src => @user['profile_image'], :style => 'height:32px;'}
+							="#{@user['name']}"
+
+						%ul.dropdown
+							%li
+								%a{:href => '/logout'} Log Out	

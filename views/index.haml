@@ -1,0 +1,10 @@
+.row
+	%h1= "How Far?"
+.row
+	.text-center
+		- if @user			
+			%a.button{:href => '/new'}= "New Game"
+			-if @game && !@game['game_over']
+				%a.button{:href => '/play'}= "Continue Game"	
+		- else
+			%a.button{:href => '/auth/twitter'}= "Log in with Twitter"

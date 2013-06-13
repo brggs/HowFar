@@ -1,0 +1,31 @@
+.row
+	.small-10.small-centered.columns
+		%h2 Leader Board
+		.row
+			.small-8.columns
+				%table
+					%thead
+						%tr
+							%th{:width => "40em"}
+							%th{:colspan => 2} Player
+							%th Level 
+					%tbody
+						- @leader_board.each_with_index do |entry, i|
+							%tr
+								%td
+									%h4.subheader= "#{i+1}"
+								%td
+									%img{:src => entry[:profile_image]}
+								%td{:width => "350em"}
+									%h5.subheader= "#{entry[:player]}"
+								%td
+									%h4= "#{entry[:level]}"
+
+
+			.small-4.columns
+				.panel
+					%h6 Stats
+
+					%p= "Games played: #{@game_count}"
+
+	

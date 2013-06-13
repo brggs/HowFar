@@ -1,10 +1,25 @@
-.container
-	.row
-		.span8.offset2
-			%form{ :action => "/", :method => "post"}
-				%h1= "How far is it from #{@place1} to #{@place2}?"
-				%br
-				%input.form-input{ :name => "distance", :type => "text", :size => "30"}
-				miles
-				%br
-				%input.btn{ :name => "submit", :type => "submit", :value => "Submit"}
+.row
+	.small-10.small-centered.columns
+		%h2
+			="Level " << @game['level'].to_s
+			%small= "How far is it from #{@game['user_location']} to #{@game['question_location']}?"
+
+	%form{ :action => "/play", :method => "post"}
+		%input{ :type => "hidden", :name => "level", :value => @game['level']}
+		.row
+			.small-3.small-centered.columns
+				.row.collapse
+					.small-9.columns
+						%input.form-input{ :name => "distance", :type => "text", :size => "30"}
+					.small-3.columns
+						%span.postfix.radius miles
+		.row
+			.text-center
+				%input.button{ :name => "submit", :type => "submit", :value => "Submit"}
+
+.row
+	.small-5.small-centered.columns.text-center
+		.progress
+			%span.meter{ :style => "width: #{@game['points']/5}%"}
+
+		%h5= "Remaining points: " << @game['points'].to_s << "/500"

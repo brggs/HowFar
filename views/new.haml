@@ -1,0 +1,23 @@
+.row
+	%h1 New Game
+	
+	%h5 How to play
+	%h5.subheader You start out with 500 points, for every question you answer points are deducted based on how accurate your guess was.  When you run out of points, it's game over!
+
+	%h5.subheader Hint: The Earth's circumference is 24,902 miles.
+
+	%form{ :action => "/new", :method => "post"}
+		%fieldset
+			%legend Options
+
+			.row
+				.small-3.large-2.columns
+					%label.right.inline{:for => "user_location"} Your Location
+				.small-9.large-10.columns
+					%input.form-input{ :name => "user_location", :type => "text", :size => "30", :value => @user_location}
+
+			-if @invalid_location
+				.alert-box.alert That location is not recognised, please try again!
+
+		.text-center
+			%input.button{ :name => "submit", :type => "submit", :value => "Start"}

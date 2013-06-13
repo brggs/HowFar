@@ -1,15 +1,21 @@
-.container
-	.row
-		.span8.offset2
-			%h2= "How far is it from #{session[:place1]} to #{session[:place2]}?"
+.row
+	%h2
+		="Level " << @result[:level].to_s
+		%small= "How far is it from #{@result[:user_location]} to #{@result[:question_location]}?"
 
-			%img{:src => "http://maps.google.com/maps/api/staticmap?size=740x320&scale=2&maptype=roadmap&sensor=false&markers=color:blue|label:A|#{session[:place1]}&markers=color:purple|label:B|#{session[:place2]}"}
+.row
+	.small-9.columns
+		%img{:src => "http://maps.google.com/maps/api/staticmap?size=740x320&scale=2&maptype=roadmap&sensor=false&markers=color:blue|label:A|#{@result[:user_location]}&markers=color:purple|label:B|#{@result[:question_location]}"}
 
-	.row
-		.span8.offset2.pagination-centered
-			%h3.text-center= "Your guess: #{@guess} miles."
-			%h3= "Actual distance: #{@actual} miles."
-			%h3= "#{@difference} miles out! #{@description}"
-
-			%br
-			%a.btn.btn-primary{:href => '/'}= "Play again!"	
+	.small-3.columns
+		.panel
+			.text-center
+				%p= "Your guess: #{@guess} miles."
+				%p= "Actual distance: #{@result[:actual]} miles."
+				%h5= "#{@result[:difference]} miles out! #{@result[:description]}"
+				%h5= "#{@result[:percent_diff]}% out, remaining points #{@result[:points]}"
+				
+				-if @result[:game_over]
+					%a.button{:href => '/leader_board'}= "Game Over!  View leaderboard"	
+				-else
+					%a.button{:href => '/play'}= "Next Level!"	
