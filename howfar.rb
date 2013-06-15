@@ -1,5 +1,5 @@
 require 'sinatra'
-require 'mongo'
+require './dbhelper'
 require 'omniauth-twitter'
 require './model/howfargame'
 
@@ -13,7 +13,7 @@ class HowFar < Sinatra::Application
   end
 
   before do
-    @db = Mongo::Connection.new("localhost", 27017).db("howfardb")
+    @db = DbHelper.get_connection
     @user = @db['users'].find_one("user_id" => session[:uid]) unless session[:uid].nil?
   end
 

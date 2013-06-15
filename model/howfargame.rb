@@ -1,10 +1,10 @@
-require 'mongo'
+require './dbhelper'
 require 'geocoder'
 
 class HowFarGame
-  @db = Mongo::Connection.new("localhost", 27017).db("howfardb")
-
   def self.new_game (user_id, user_location, geo = Geocoder::Calculations)
+    @db = DbHelper.get_connection
+
     games = @db['games']
     games.remove("user_id" => user_id)
 
@@ -20,11 +20,13 @@ class HowFarGame
   end  
 
   def self.current_game (user_id)
+    @db = DbHelper.get_connection
     games = @db['games']
     games.find_one("user_id" => user_id)
   end  
 
   def self.answer_question (user_id, guess, geo = Geocoder::Calculations)
+    @db = DbHelper.get_connection
     game = current_game(user_id)
 
     # Deal with answer
@@ -89,12 +91,14 @@ class HowFarGame
   end
 
   def self.leader_board
+    @db = DbHelper.get_connection
     @db['leader_board'].find.sort(:level => :desc).limit(10)
   end  
 
 end
 
 def next_location (user_location, geo = Geocoder::Calculations)
+  @db = DbHelper.get_connection
   places = File.open('model/places.txt').readlines
   places += File.open('model/landmarks.txt').readlines
 
