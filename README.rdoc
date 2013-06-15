@@ -5,6 +5,8 @@ A distance guessing game, built with the Sinatra web framework.
 
 === Build Steps
 
+  Install mongodb and start a local server
+  
   cd HowFar
   bundle install
   rackup
