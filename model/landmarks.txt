@@ -2,7 +2,7 @@ The Statue of Liberty in New York, USA
 The Eiffel Tower in Paris, France
 St. Basil’s Cathedral in Moscow, Russia
 Blue Domed Church in Santorini, Greece
-The Great Sphinx at Giza, Egipt
+The Great Sphinx at Giza, Egypt
 The Pyramids of Giza in Egypt
 The Little Mermaid in Copenhagen, Denmark
 The Palace of Versailles in France
@@ -34,7 +34,7 @@ Al Aqsa Mosque in Jerusalem
 Niagara Falls at the border of Ontario ( Canada ) and New York ( USA )
 Angkor Wat at Cambodia
 Manneken Pis in Brussels
-St. Peter’s  Cathedral at Vatican City
+St. Peter’s Cathedral at Vatican City
 Mount Rushmore in South Dakota
 The Grand Canyon in Arizona
 Nevado Mismi in Peru
@@ -46,7 +46,7 @@ Cape of Good Hope in South Africa
 North Cape in Norway
 Chichen Itza in Mexico
 Inukshuk in Canada
-Table Mountain in Cape Town,  South Africa
+Table Mountain in Cape Town, South Africa
 Golden Gate Bridge in San Francisco, California
 Sydney Opera House in Australia
 Parc Guell in Barcelona, Spain
@@ -84,7 +84,7 @@ The Louvre in Paris, France
 Atomium in Brussels
 White Cliffs of Dover in Great Britain
 Minaret of Jam in Afghanistan
-Golden Temple  of Amritsar in India
+Golden Temple of Amritsar in India
 The Palace of Parliament in Bucharest, Romania
 Rock of Gibraltar
 Lotus Temple in New Delhi, India

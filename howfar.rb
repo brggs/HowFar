@@ -14,7 +14,7 @@ class HowFar < Sinatra::Application
 
   before do
     @db = DbHelper.get_connection
-    @user = @db['users'].find_one("user_id" => session[:uid]) unless session[:uid].nil?
+    @user = @db['users'].find_one("user_id" => session[:uid]) if session[:logged_in]
   end
 
   get '/' do
@@ -25,8 +25,6 @@ class HowFar < Sinatra::Application
   end
 
   get '/new' do
-    redirect '/' unless @user
-
     # Notify if the last input was invalid, then reset the flag
     @invalid_location = session[:invalid_location]
     session[:invalid_location] = false
@@ -46,7 +44,15 @@ class HowFar < Sinatra::Application
   end
 
   post '/new' do
-    redirect '/' unless @user
+    # If the user is not logged in, generate an id and user for this game
+    unless session[:logged_in]
+      session[:uid] = SecureRandom.uuid
+
+      new_user = {:user_id => session[:uid],
+                  :name => params[:user_name]
+                 }
+      @db['users'].insert(new_user)
+    end
 
     location = Geocoder.search(params[:user_location])
 
@@ -61,7 +67,7 @@ class HowFar < Sinatra::Application
   end
 
   get '/play' do
-    redirect '/' unless @user
+    redirect '/' if session[:uid].nil?
 
     # Load current game
     @game = HowFarGame.current_game(session[:uid])
@@ -72,7 +78,7 @@ class HowFar < Sinatra::Application
   end
 
   post '/play' do
-    redirect '/' unless @user
+    redirect '/' if session[:uid].nil?
 
     if HowFarGame.current_game(session[:uid])['level'] != params[:level].to_i
       redirect '/play'
@@ -101,6 +107,7 @@ class HowFar < Sinatra::Application
     halt(401,'Not Authorized') if env['omniauth.auth'].nil?
     
     session[:uid] = env['omniauth.auth']['uid']
+    session[:logged_in] = true
 
     user = @db['users'].find_one("user_id" => session[:uid])
 
@@ -127,6 +134,7 @@ class HowFar < Sinatra::Application
 
   get '/logout' do
     session[:uid] = nil
+    session[:logged_in] = false
     redirect to("/")
   end
 end
