@@ -48,8 +48,14 @@ class HowFar < Sinatra::Application
     unless session[:logged_in]
       session[:uid] = SecureRandom.uuid
 
+      # Deal with the user not entering a name
+      name = params[:user_name].empty? ? "Anonymous" : params[:user_name]
+
+      # Store the name for next time
+      session[:last_name] = name
+
       new_user = {:user_id => session[:uid],
-                  :name => params[:user_name]
+                  :name => name
                  }
       @db['users'].insert(new_user)
     end

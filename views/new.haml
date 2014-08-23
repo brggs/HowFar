@@ -24,7 +24,7 @@
 					.small-3.large-2.columns
 						%label.right.inline{:for => "user_name"} Your Name
 					.small-9.large-10.columns
-						%input.form-input{ :name => "user_name", :type => "text", :size => "30", :value => @user_name}
+						%input.form-input{ :name => "user_name", :type => "text", :size => "30", :value => session[:last_name]}
 
 		.text-center
 			%input.button{ :name => "submit", :type => "submit", :value => "Start"}
